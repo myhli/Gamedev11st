@@ -12,8 +12,8 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
-  productName: CoinCollector_HananVictor
+  companyName: myhli
+  productName: Gamedev11st
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -609,14 +609,14 @@ PlayerSettings:
   editorAssembliesCompatibilityLevel: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: CoinCollector_HananVictor
+  metroPackageName: Gamedev11st
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: CoinCollector_HananVictor
+  metroApplicationDescription: Gamedev11st
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0
@@ -690,8 +690,8 @@ PlayerSettings:
   cloudProjectId: 3c4d9cc2-91a0-4a82-ad8a-20696cff5925
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: CoinCollector_HananVictor
-  organizationId: vctrhanan
+  projectName: Gamedev11st
+  organizationId: myhli
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
