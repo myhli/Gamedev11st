@@ -44,32 +44,25 @@ public class EnemyAI : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
-{
-    if (collision.CompareTag("Player"))
     {
-        PlayerHealth playerHealth = collision.GetComponent<PlayerHealth>();
-        if (playerHealth != null)
+        BeriDamageKePlayer(collision.gameObject);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        BeriDamageKePlayer(collision.gameObject);
+    }
+
+    private void BeriDamageKePlayer(GameObject target)
+    {
+        if (target.CompareTag("Player"))
         {
-            playerHealth.TakeDamage(contactDamage);
+            PlayerHealth playerHealth = target.GetComponent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(contactDamage);
+                Destroy(gameObject);
+            }
         }
     }
-}
-private void OnCollisionEnter2D(Collision2D collision)
-{
-    BeriDamageKePlayer(collision.gameObject);
-}
-
-// Tambahkan ini agar saat Orc terus menempel pada Player, damage tetap masuk berkala
-
-private void BeriDamageKePlayer(GameObject target)
-{
-    if (target.CompareTag("Player"))
-    {
-        PlayerHealth playerHealth = target.GetComponent<PlayerHealth>();
-        if (playerHealth != null)
-        {
-            playerHealth.TakeDamage(contactDamage);
-        }
-    }
-}
 }

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89a9f1aa238cd814daad3f6f4a332486, type: 3}
   m_Name: ItemCoin
   m_EditorClassIdentifier: Assembly-CSharp::ItemDetails
-  itemName: Coin
+  itemName: Data Chip
   quantity: 1
   itemIcon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  description: Encrypted telemetry data chip extracted from mainframe node.
