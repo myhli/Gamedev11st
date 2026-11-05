@@ -46,20 +46,38 @@ private void Awake()
     // Update is called once per frame
     void Update()
     {
-        if (inventoryAction.triggered && InventoryCanvas != null && InventoryActive == false)
+        bool toggle = (inventoryAction != null && inventoryAction.triggered) ||
+                      (Keyboard.current != null && (Keyboard.current.iKey.wasPressedThisFrame || Keyboard.current.tabKey.wasPressedThisFrame));
+
+        if (toggle)
         {
-            InventoryActive = true;
-            Time.timeScale = 0f;
-            Debug.Log("Inventory is active");
-            InventoryCanvas.SetActive(true);
-            // Add item to panel
+            ToggleInventory();
+        }
+    }
+
+    public void ToggleInventory()
+    {
+        if (InventoryCanvas == null) return;
+
+        InventoryActive = !InventoryActive;
+        Time.timeScale = InventoryActive ? 0f : 1f;
+        InventoryCanvas.SetActive(InventoryActive);
+        if (InventoryActive)
+        {
             ShowFirstItem();
-        } else if (inventoryAction.triggered && InventoryCanvas != null && InventoryActive == true)
+        }
+    }
+
+    private void OnGUI()
+    {
+        GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
+        buttonStyle.fontSize = 13;
+        buttonStyle.fontStyle = FontStyle.Bold;
+
+        string label = InventoryActive ? "Tutup Inventory [I]" : "Buka Inventory [I]";
+        if (GUI.Button(new Rect(Screen.width - 180, 20, 160, 36), label, buttonStyle))
         {
-            InventoryActive = false;
-            Time.timeScale = 1f;
-            Debug.Log("Inventory is deactivated");
-            InventoryCanvas.SetActive(false);
+            ToggleInventory();
         }
     }
 

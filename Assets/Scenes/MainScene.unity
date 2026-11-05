@@ -3750,7 +3750,7 @@ GameObject:
   - component: {fileID: 1422101673}
   - component: {fileID: 1422101672}
   m_Layer: 0
-  m_Name: EventSystem
+  m_Name: PemancarEventObj
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

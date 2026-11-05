@@ -37,6 +37,16 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (Keyboard.current != null)
+        {
+            Vector2 rawInput = Vector2.zero;
+            if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) rawInput.y += 1;
+            if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) rawInput.y -= 1;
+            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) rawInput.x -= 1;
+            if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) rawInput.x += 1;
+            if (rawInput != Vector2.zero) arahGerak = rawInput.normalized;
+        }
+
         // Parameter Animator
         if (anim != null)
         {

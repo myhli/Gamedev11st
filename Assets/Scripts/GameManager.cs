@@ -46,6 +46,11 @@ public class GameManager : MonoBehaviour
         // Hitung total musuh di scene
         HitungTotalMusuh();
 
+        if (FindFirstObjectByType<EnemySpawner>() == null)
+        {
+            gameObject.AddComponent<EnemySpawner>();
+        }
+
         // Sembunyikan panel/teks UI menang dan kalah di awal
         if (teksMenang != null) teksMenang.SetActive(false);
         if (panelMenang != null) panelMenang.SetActive(false);
@@ -70,7 +75,7 @@ public class GameManager : MonoBehaviour
 
     public void HitungTotalMusuh()
     {
-        EnemyHealth[] enemies = Object.FindObjectsByType<EnemyHealth>(FindObjectsInactive.Exclude);
+        EnemyHealth[] enemies = Object.FindObjectsByType<EnemyHealth>(FindObjectsSortMode.None);
         totalMusuh = enemies.Length;
         Debug.Log($"[GameManager] Total musuh aktif di scene: {totalMusuh}");
     }
@@ -109,7 +114,7 @@ public class GameManager : MonoBehaviour
         Debug.Log($"[GameManager] Musuh terkalahkan: {musuhTerkalahkan}/{totalMusuh}");
 
         // Cek sisa musuh yang masih aktif di scene selain yang sedang proses hancur
-        EnemyHealth[] remaining = Object.FindObjectsByType<EnemyHealth>(FindObjectsInactive.Exclude);
+        EnemyHealth[] remaining = Object.FindObjectsByType<EnemyHealth>(FindObjectsSortMode.None);
         int activeCount = 0;
         foreach (var e in remaining)
         {
