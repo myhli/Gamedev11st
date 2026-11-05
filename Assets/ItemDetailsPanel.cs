@@ -2,8 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-// Controls the right-side panel (InventoryDetails) of the inventory.
-// It draws the details of the item the player has selected.
 public class ItemDetailsPanel : MonoBehaviour
 {
     [SerializeField] private Image itemImage;
@@ -14,11 +12,16 @@ public class ItemDetailsPanel : MonoBehaviour
     private void Awake()
     {
         ValidateReferences();
+        Clear();
+    }
+
+    private void OnEnable()
+    {
+        Clear();
     }
 
     private void ValidateReferences()
     {
-        // Pastikan referensi tidak tertukar jika namanya mengindikasikan sebaliknya
         if (itemQuantityText != null && itemDescriptionText != null)
         {
             string qtyName = itemQuantityText.gameObject.name.ToLower();
@@ -33,8 +36,6 @@ public class ItemDetailsPanel : MonoBehaviour
         }
     }
 
-    // Show the details of the selected item.
-    // quantity is the stack size currently stored in the slot.
     public void Show(ItemDetails item, int quantity)
     {
         if (item == null)
@@ -55,7 +56,6 @@ public class ItemDetailsPanel : MonoBehaviour
         if (itemDescriptionText != null) itemDescriptionText.text = item.Description;
     }
 
-    // Empty the panel, used when the selected slot has no item.
     public void Clear()
     {
         if (itemImage != null)
