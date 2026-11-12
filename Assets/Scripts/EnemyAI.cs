@@ -14,55 +14,32 @@ public class EnemyAI : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        // Cari objek Player di scene secara otomatis
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
-        {
-            playerTransform = playerObj.transform;
-        }
+        if (playerObj != null) playerTransform = playerObj.transform;
     }
 
     void FixedUpdate()
     {
         if (playerTransform == null) return;
 
-        // Hitung arah menuju Player
         Vector2 arah = (playerTransform.position - transform.position).normalized;
-
-        // Gerakkan Orc mendekati Player
         rb.linearVelocity = arah * speed;
 
-        // Balik hadap badan Orc (Flip X) sesuai posisi Player
-        if (arah.x > 0.05f)
-        {
-            spriteRenderer.flipX = false;
-        }
-        else if (arah.x < -0.05f)
-        {
-            spriteRenderer.flipX = true;
-        }
+        if (arah.x > 0.05f) spriteRenderer.flipX = false;
+        else if (arah.x < -0.05f) spriteRenderer.flipX = true;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        BeriDamageKePlayer(collision.gameObject);
-    }
+    private void OnTriggerEnter2D(Collider2D collision) => BeriDamage(collision.gameObject);
+    private void OnCollisionEnter2D(Collision2D collision) => BeriDamage(collision.gameObject);
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void BeriDamage(GameObject target)
     {
-        BeriDamageKePlayer(collision.gameObject);
-    }
-
-    private void BeriDamageKePlayer(GameObject target)
-    {
-        if (target.CompareTag("Player"))
+        if (!target.CompareTag("Player")) return;
+        PlayerHealth ph = target.GetComponent<PlayerHealth>();
+        if (ph != null)
         {
-            PlayerHealth playerHealth = target.GetComponent<PlayerHealth>();
-            if (playerHealth != null)
-            {
-                playerHealth.TakeDamage(contactDamage);
-                Destroy(gameObject);
-            }
+            ph.TakeDamage(contactDamage);
+            Destroy(gameObject);
         }
     }
 }

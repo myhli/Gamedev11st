@@ -1,6 +1,7 @@
+using System.Collections;
 using UnityEngine;
 
-public class EnemyHealth : MonoBehaviour
+public class EnemyHealth : MonoBehaviour, IDamageable
 {
     [SerializeField] private int maxHealth = 3;
     private int currentHealth;
@@ -13,43 +14,18 @@ public class EnemyHealth : MonoBehaviour
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-        Debug.Log(gameObject.name + " terkena damage! Sisa HP: " + currentHealth);
-
-        // Efek visual singkat (opsional: kedip merah saat kena hit)
         StartCoroutine(BlinkRed());
 
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
+        if (currentHealth <= 0) Destroy(gameObject);
     }
 
-    private System.Collections.IEnumerator BlinkRed()
+    private IEnumerator BlinkRed()
     {
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null)
-        {
-            sr.color = Color.red;
-            yield return new WaitForSeconds(0.1f);
-            sr.color = Color.white;
-        }
-    }
+        if (sr == null) yield break;
 
-    void Die()
-    {
-        Debug.Log(gameObject.name + " Mati!");
-
-        // Beritahu GameManager bahwa musuh ini kalah
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.MusuhKalah(this);
-        }
-        else
-        {
-            GameManager gm = FindAnyObjectByType<GameManager>();
-            if (gm != null) gm.MusuhKalah(this);
-        }
-
-        Destroy(gameObject);
+        sr.color = Color.red;
+        yield return new WaitForSeconds(0.1f);
+        sr.color = Color.white;
     }
 }

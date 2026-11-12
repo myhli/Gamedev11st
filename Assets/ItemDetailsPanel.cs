@@ -11,29 +11,7 @@ public class ItemDetailsPanel : MonoBehaviour
 
     private void Awake()
     {
-        ValidateReferences();
         Clear();
-    }
-
-    private void OnEnable()
-    {
-        Clear();
-    }
-
-    private void ValidateReferences()
-    {
-        if (itemQuantityText != null && itemDescriptionText != null)
-        {
-            string qtyName = itemQuantityText.gameObject.name.ToLower();
-            string descName = itemDescriptionText.gameObject.name.ToLower();
-
-            if (qtyName.Contains("desc") || descName.Contains("qty"))
-            {
-                TMP_Text temp = itemQuantityText;
-                itemQuantityText = itemDescriptionText;
-                itemDescriptionText = temp;
-            }
-        }
     }
 
     public void Show(ItemDetails item, int quantity)
@@ -43,8 +21,6 @@ public class ItemDetailsPanel : MonoBehaviour
             Clear();
             return;
         }
-
-        ValidateReferences();
 
         if (itemImage != null)
         {

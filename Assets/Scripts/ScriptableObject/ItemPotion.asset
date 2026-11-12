@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89a9f1aa238cd814daad3f6f4a332486, type: 3}
   m_Name: ItemPotion
   m_EditorClassIdentifier: Assembly-CSharp::ItemDetails
-  itemName: Battery Cell
+  itemName: Potion
   quantity: 1
-  itemIcon: {fileID: 6834701404633864263, guid: 7c696c9df71b5f040ab92a9f8ad21cc5, type: 3}
-  description: High-density lithium cell restoring drone operational power.
+  itemIcon: {fileID: -1972361127685065434, guid: 05de044596a5baa49b3c3c10fabe66d4, type: 3}
+  description: Potion ini sangat sakti dan akan membuat anda ga kenapa - kenapa

@@ -1,5 +1,4 @@
 using UnityEngine;
-using TMPro;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
@@ -7,216 +6,73 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [Header("Musuh & Kondisi Menang/Kalah")]
-    public int totalMusuh;
-    private int musuhTerkalahkan = 0;
     public bool isGameOver { get; private set; }
-    public bool isGameWon { get; private set; }
 
-    [Header("Koin Settings")]
-    public int totalKoin;
-    private int koinTerkumpul = 0;
-    public ItemDetails coinData;
+    [Header("Musuh Settings")]
+    [SerializeField] private GameObject kamikazeBotPrefab;
+    [SerializeField] private float spawnInterval = 3f;
+    [SerializeField] private int maxEnemies = 8;
+    [SerializeField] private float spawnMargin = 1.5f;
 
-    [Header("UI References")]
-    public TextMeshProUGUI teksSkor;
-    public GameObject teksMenang;
-    public GameObject panelMenang;
-    public GameObject teksKalah;
-    public GameObject panelKalah;
-    public TextMeshProUGUI teksStatus;
+    private Camera mainCam;
 
     private void Awake()
     {
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
-        else
-        {
-            Instance = this;
-        }
+
+        Instance = this;
     }
 
     void Start()
     {
-        // Hitung total koin di scene
-        totalKoin = GameObject.FindGameObjectsWithTag("Coin").Length;
+        mainCam = Camera.main;
 
-        // Hitung total musuh di scene
-        HitungTotalMusuh();
-
-        if (FindFirstObjectByType<EnemySpawner>() == null)
-        {
-            gameObject.AddComponent<EnemySpawner>();
-        }
-
-        // Sembunyikan panel/teks UI menang dan kalah di awal
-        if (teksMenang != null) teksMenang.SetActive(false);
-        if (panelMenang != null) panelMenang.SetActive(false);
-        if (teksKalah != null) teksKalah.SetActive(false);
-        if (panelKalah != null) panelKalah.SetActive(false);
-        if (teksStatus != null) teksStatus.gameObject.SetActive(false);
-
-        UpdateSkorUI();
+        if (kamikazeBotPrefab != null) InvokeRepeating(nameof(SpawnEnemy), 2f, spawnInterval);
     }
 
     void Update()
     {
-        // Shortcut [R] untuk restart permainan saat game over / menang
-        if (isGameOver)
+        if (isGameOver && Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
-            {
-                RestartGame();
-            }
+            RestartGame();
         }
     }
 
-    public void HitungTotalMusuh()
+    void SpawnEnemy()
     {
-        EnemyHealth[] enemies = Object.FindObjectsByType<EnemyHealth>(FindObjectsSortMode.None);
-        totalMusuh = enemies.Length;
-        Debug.Log($"[GameManager] Total musuh aktif di scene: {totalMusuh}");
+        if (kamikazeBotPrefab == null || isGameOver) return;
+        if (GameObject.FindGameObjectsWithTag("Enemy").Length >= maxEnemies) return;
+
+        Instantiate(kamikazeBotPrefab, GetSpawnOutsideScreen(), Quaternion.identity);
     }
 
-    // Dipanggil saat Player mati di PlayerHealth.cs
+    private Vector3 GetSpawnOutsideScreen()
+    {
+        if (mainCam == null) mainCam = Camera.main;
+
+        float h = mainCam.orthographicSize;
+        float w = h * mainCam.aspect;
+        Vector3 c = mainCam.transform.position;
+
+        switch (Random.Range(0, 4))
+        {
+            case 0: return new Vector3(Random.Range(c.x - w, c.x + w), c.y + h + spawnMargin, 0f);
+            case 1: return new Vector3(Random.Range(c.x - w, c.x + w), c.y - h - spawnMargin, 0f);
+            case 2: return new Vector3(c.x - w - spawnMargin, Random.Range(c.y - h, c.y + h), 0f);
+            default: return new Vector3(c.x + w + spawnMargin, Random.Range(c.y - h, c.y + h), 0f);
+        }
+    }
+
     public void PlayerKalah()
     {
-        if (isGameOver || isGameWon) return;
+        if (isGameOver) return;
 
         isGameOver = true;
-        Debug.Log("💀 [GameManager] PLAYER KALAH! Game Over.");
-
-        if (panelKalah != null)
-        {
-            panelKalah.SetActive(true);
-        }
-        else if (teksKalah != null)
-        {
-            teksKalah.SetActive(true);
-        }
-
-        if (teksStatus != null)
-        {
-            teksStatus.text = "GAME OVER!\nKamu Telah Gugur\n(Tekan [R] untuk Coba Lagi)";
-            teksStatus.color = Color.red;
-            teksStatus.gameObject.SetActive(true);
-        }
-    }
-
-    // Dipanggil saat musuh mati di EnemyHealth.cs
-    public void MusuhKalah(EnemyHealth musuh)
-    {
-        if (isGameOver && !isGameWon) return;
-
-        musuhTerkalahkan++;
-        Debug.Log($"[GameManager] Musuh terkalahkan: {musuhTerkalahkan}/{totalMusuh}");
-
-        // Cek sisa musuh yang masih aktif di scene selain yang sedang proses hancur
-        EnemyHealth[] remaining = Object.FindObjectsByType<EnemyHealth>(FindObjectsSortMode.None);
-        int activeCount = 0;
-        foreach (var e in remaining)
-        {
-            if (e != null && e != musuh && e.gameObject.activeInHierarchy)
-            {
-                activeCount++;
-            }
-        }
-
-        Debug.Log($"[GameManager] Sisa musuh hidup: {activeCount}");
-
-        if (activeCount <= 0 || (totalMusuh > 0 && musuhTerkalahkan >= totalMusuh))
-        {
-            Menang();
-        }
-    }
-
-    public void Menang()
-    {
-        if (isGameOver && !isGameWon) return;
-
-        isGameWon = true;
-        isGameOver = true;
-        Debug.Log("🏆 [GameManager] KAMU MENANG! Seluruh musuh telah dikalahkan!");
-
-        if (panelMenang != null)
-        {
-            panelMenang.SetActive(true);
-        }
-        else if (teksMenang != null)
-        {
-            teksMenang.SetActive(true);
-        }
-
-        if (teksStatus != null)
-        {
-            teksStatus.text = "VICTORY!\nSeluruh Musuh Telah Dikalahkan!\n(Tekan [R] untuk Main Lagi)";
-            teksStatus.color = new Color(1f, 0.85f, 0.2f);
-            teksStatus.gameObject.SetActive(true);
-        }
-    }
-
-    public void AmbilKoin(Sprite icon = null)
-    {
-        koinTerkumpul++;
-        UpdateSkorUI();
-
-        if (InventoryManager.Instance != null && coinData != null)
-        {
-            InventoryManager.Instance.AddItem(coinData);
-        }
-    }
-
-    void UpdateSkorUI()
-    {
-        if (teksSkor != null)
-        {
-            teksSkor.text = "Skor: " + koinTerkumpul;
-        }
-    }
-
-    private void OnGUI()
-    {
-        if (!isGameOver) return;
-
-        // Jika tidak ada panel UI kustom yang terpasang di Inspector, tampilkan banner overlay GUI otomatis
-        if (panelMenang == null && teksMenang == null && panelKalah == null && teksKalah == null && teksStatus == null)
-        {
-            GUIStyle boxStyle = new GUIStyle(GUI.skin.box);
-            boxStyle.fontSize = 22;
-            boxStyle.alignment = TextAnchor.MiddleCenter;
-            boxStyle.fontStyle = FontStyle.Bold;
-
-            GUIStyle subStyle = new GUIStyle(GUI.skin.label);
-            subStyle.fontSize = 15;
-            subStyle.alignment = TextAnchor.MiddleCenter;
-            subStyle.normal.textColor = Color.white;
-
-            float boxWidth = 440;
-            float boxHeight = 170;
-            float x = (Screen.width - boxWidth) / 2;
-            float y = (Screen.height - boxHeight) / 2;
-
-            if (isGameWon)
-            {
-                GUI.color = new Color(0.2f, 0.9f, 0.35f, 0.95f);
-                GUI.Box(new Rect(x, y, boxWidth, boxHeight), "🏆 VICTORY!\nSeluruh Musuh Telah Dikalahkan!", boxStyle);
-            }
-            else
-            {
-                GUI.color = new Color(0.95f, 0.2f, 0.2f, 0.95f);
-                GUI.Box(new Rect(x, y, boxWidth, boxHeight), "💀 GAME OVER!\nPlayer Telah Gugur!", boxStyle);
-            }
-
-            GUI.color = Color.white;
-            GUI.Label(new Rect(x, y + 85, boxWidth, 25), "Tekan [R] pada keyboard untuk Coba Lagi", subStyle);
-
-            if (GUI.Button(new Rect(x + 130, y + 115, 180, 35), "🔄 Main Lagi (Restart)"))
-            {
-                RestartGame();
-            }
-        }
+        Time.timeScale = 0f;
     }
 
     public void RestartGame()

@@ -1,6 +1,4 @@
-using UnityEngine;
-
-    public interface IDamageable
+public interface IDamageable
 {
-    void KenaDamage(int jumlah);
+    void TakeDamage(int damage);
 }

@@ -14,7 +14,14 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
     // Simpan data ScriptableObject & Properti untuk InventoryManager
     [SerializeField] private ItemDetails itemDetails;
     public ItemDetails ItemDetails => itemDetails;
+    public int Quantity => itemQuantity;
     public bool IsEmpty => itemDetails == null || itemQuantity == 0;
+
+    public void SetSelected(bool value)
+    {
+        isItemSelected = value;
+        if (selectedPanel != null) selectedPanel.SetActive(value);
+    }
 
     // Item Slot UI
     [SerializeField] private TMP_Text quantityText;
@@ -30,6 +37,8 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
     public void Start()
     {
         inventoryManager = FindAnyObjectByType<InventoryManager>();
+
+        if (IsEmpty && quantityText != null) quantityText.enabled = false;
     }
 
     public void AddItem(ItemDetails item)
